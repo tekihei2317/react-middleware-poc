@@ -1,9 +1,7 @@
-import { useReducer } from "react";
 import {
   AdminUser,
   AuthContextProvider,
   useAuthContext,
-  User,
 } from "./Authentication";
 
 function Main({ user }: { user: AdminUser }) {
@@ -11,38 +9,12 @@ function Main({ user }: { user: AdminUser }) {
     <div>
       <h1>トップページ</h1>
       <div>{user.userName}</div>
-      <div>{JSON.stringify(user)}</div>
     </div>
   );
 }
 
 const Loading = () => {
   return <div>Loading...</div>;
-};
-
-type AuthenticationProps = {
-  children: (user: User) => JSX.Element;
-};
-
-const Authentication = ({ children }: AuthenticationProps) => {
-  const { userState } = useAuthContext();
-
-  if (userState.isLoading) return <Loading />;
-  if (userState.user === undefined) return <div>ログインしてください.</div>;
-  return children(userState.user);
-};
-
-type AdminOnlyProps = {
-  user: User;
-  children: (user: AdminUser) => JSX.Element;
-};
-
-const AdminOnly = ({ user, children }: AdminOnlyProps) => {
-  if (user.type === "general") {
-    return <div>権限がありません</div>;
-  }
-
-  return children(user);
 };
 
 const Debug = () => {
@@ -91,11 +63,10 @@ const ComponentMiddleware = ({
   children,
   middlewares,
 }: ComponentMiddlewareProps) => {
-  const [currentIndex, increment] = useReducer((prev) => prev + 1, 0);
+  let currentIndex = 0;
 
   const next = (props: any) => {
-    const middleware = middlewares[currentIndex];
-    increment();
+    const middleware = middlewares[currentIndex++];
 
     if (middleware) return middleware(props, next);
     else {
@@ -104,42 +75,39 @@ const ComponentMiddleware = ({
     }
   };
 
-  const result = next({});
-  console.log({ result });
-  return result;
+  return next({});
 };
 
-export default function App() {
+const AppContents = () => {
   const { userState } = useAuthContext();
 
   const middlewares = [
     (props, next) => {
-      console.log("middleware called");
-      console.log({ userState });
-
       if (userState.isLoading) return <Loading />;
       if (userState.user === undefined) return <div>ログインしてください.</div>;
 
-      console.log({ user: userState.user });
-
-      // return next({ ...props, user: userState.user });
-      return next({ hoge: "hoge" });
+      return next({ ...props, user: userState.user });
+    },
+    (props, next) => {
+      if (props.user.type !== "admin") return <div>権限がありません</div>;
+      return next({ ...props, user: props.user });
     },
   ];
 
   return (
-    <AuthContextProvider>
+    <>
       <Debug />
-      <Authentication>
-        {(user) => (
-          <AdminOnly user={user}>
-            {(adminUser) => <Main user={adminUser} />}
-          </AdminOnly>
-        )}
-      </Authentication>
-      {/* <ComponentMiddleware middlewares={middlewares}>
-        {(props) => JSON.stringify(props)}
-      </ComponentMiddleware> */}
+      <ComponentMiddleware middlewares={middlewares}>
+        {(props) => <Main user={props.user} />}
+      </ComponentMiddleware>
+    </>
+  );
+};
+
+export default function App() {
+  return (
+    <AuthContextProvider>
+      <AppContents />
     </AuthContextProvider>
   );
 }
