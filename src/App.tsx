@@ -26,6 +26,21 @@ const AuthGuard = ({ children }: { children: React.ReactElement }) => {
   return children;
 };
 
+const AdminOnly = ({ children }: { children: React.ReactElement }) => {
+  const { userState } = useAuthContext();
+
+  // assertしたい
+  if (userState.isLoading || userState.user === undefined) {
+    throw new Error("Please use this component inside AuthGuard");
+  }
+
+  if (userState.user.type === "general") {
+    return <div>権限がありません</div>;
+  }
+
+  return children;
+};
+
 const Debug = () => {
   const { setUserState } = useAuthContext();
 
@@ -41,10 +56,23 @@ const Debug = () => {
       </button>
       <button
         onClick={() =>
-          setUserState({ isLoading: false, user: { userName: "tekihei2317" } })
+          setUserState({
+            isLoading: false,
+            user: { type: "admin", userName: "tekihei2317" },
+          })
         }
       >
-        ログイン済み
+        管理者ユーザー
+      </button>
+      <button
+        onClick={() =>
+          setUserState({
+            isLoading: false,
+            user: { type: "general", userName: "tekihei2317", userId: 1 },
+          })
+        }
+      >
+        一般ユーザー
       </button>
     </div>
   );
@@ -55,7 +83,9 @@ export default function App() {
     <AuthContextProvider>
       <Debug />
       <AuthGuard>
-        <Main />
+        <AdminOnly>
+          <Main />
+        </AdminOnly>
       </AuthGuard>
     </AuthContextProvider>
   );

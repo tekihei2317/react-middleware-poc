@@ -9,7 +9,10 @@ type UserState<User> =
       user: User | undefined;
     };
 
-type User = { userName: string };
+// 持っている属性が違うことのいい例を作りたい
+type GeneralUser = { type: "general"; userName: string; userId: number };
+type AdminUser = { type: "admin"; userName: string };
+type User = GeneralUser | AdminUser;
 
 type AuthContextValue = {
   userState: UserState<User>;
@@ -37,7 +40,7 @@ export const AuthContextProvider = ({
       () =>
         setUserState({
           isLoading: false,
-          user: { userName: "tekihei2317" },
+          user: { type: "admin", userName: "tekihei2317" },
           // user: undefined,
         }),
       500
