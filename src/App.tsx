@@ -1,11 +1,11 @@
 import {
+  AdminUser,
   AuthContextProvider,
   useAuthContext,
-  useAuthenticatedUser,
+  User,
 } from "./Authentication";
 
-function Main() {
-  const user = useAuthenticatedUser();
+function Main({ user }: { user: AdminUser }) {
   return (
     <div>
       <h1>トップページ</h1>
@@ -18,27 +18,29 @@ const Loading = () => {
   return <div>Loading...</div>;
 };
 
-const AuthGuard = ({ children }: { children: React.ReactElement }) => {
+type AuthenticationProps = {
+  children: (user: User) => React.ReactElement;
+};
+
+const Authentication = ({ children }: AuthenticationProps) => {
   const { userState } = useAuthContext();
 
   if (userState.isLoading) return <Loading />;
   if (userState.user === undefined) return <div>ログインしてください.</div>;
-  return children;
+  return children(userState.user);
 };
 
-const AdminOnly = ({ children }: { children: React.ReactElement }) => {
-  const { userState } = useAuthContext();
+type AdminOnlyProps = {
+  user: User;
+  children: (user: AdminUser) => React.ReactElement;
+};
 
-  // assertしたい
-  if (userState.isLoading || userState.user === undefined) {
-    throw new Error("Please use this component inside AuthGuard");
-  }
-
-  if (userState.user.type === "general") {
+const AdminOnly = ({ user, children }: AdminOnlyProps) => {
+  if (user.type === "general") {
     return <div>権限がありません</div>;
   }
 
-  return children;
+  return children(user);
 };
 
 const Debug = () => {
@@ -48,6 +50,16 @@ const Debug = () => {
     <div>
       <button onClick={() => setUserState({ isLoading: true })}>
         ローディング
+      </button>
+      <button
+        onClick={() =>
+          setUserState({
+            isLoading: false,
+            user: { type: "general", userName: "tekihei2317", userId: 1 },
+          })
+        }
+      >
+        一般ユーザー
       </button>
       <button
         onClick={() => setUserState({ isLoading: false, user: undefined })}
@@ -64,16 +76,6 @@ const Debug = () => {
       >
         管理者ユーザー
       </button>
-      <button
-        onClick={() =>
-          setUserState({
-            isLoading: false,
-            user: { type: "general", userName: "tekihei2317", userId: 1 },
-          })
-        }
-      >
-        一般ユーザー
-      </button>
     </div>
   );
 };
@@ -82,11 +84,13 @@ export default function App() {
   return (
     <AuthContextProvider>
       <Debug />
-      <AuthGuard>
-        <AdminOnly>
-          <Main />
-        </AdminOnly>
-      </AuthGuard>
+      <Authentication>
+        {(user) => (
+          <AdminOnly user={user}>
+            {(adminUser) => <Main user={adminUser} />}
+          </AdminOnly>
+        )}
+      </Authentication>
     </AuthContextProvider>
   );
 }

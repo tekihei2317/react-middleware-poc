@@ -10,9 +10,9 @@ type UserState<User> =
     };
 
 // 持っている属性が違うことのいい例を作りたい
-type GeneralUser = { type: "general"; userName: string; userId: number };
-type AdminUser = { type: "admin"; userName: string };
-type User = GeneralUser | AdminUser;
+export type GeneralUser = { type: "general"; userName: string; userId: number };
+export type AdminUser = { type: "admin"; userName: string };
+export type User = GeneralUser | AdminUser;
 
 type AuthContextValue = {
   userState: UserState<User>;
@@ -74,13 +74,4 @@ export function useAuthContext(): AuthContextValue {
   }
 
   return value;
-}
-
-export function useAuthenticatedUser(): User {
-  const { userState } = useAuthContext();
-
-  if (userState.isLoading) throw new Error("User is loading");
-  if (userState.user === undefined) throw new Error("User is not logged in");
-
-  return userState.user;
 }
