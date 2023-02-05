@@ -35,19 +35,19 @@ export const AuthContextProvider = ({
     isLoading: true,
   });
 
-  React.useEffect(() => {
-    const timer = setTimeout(
-      () =>
-        setUserState({
-          isLoading: false,
-          user: { type: "admin", userName: "tekihei2317" },
-          // user: undefined,
-        }),
-      500
-    );
+  // React.useEffect(() => {
+  //   const timer = setTimeout(
+  //     () =>
+  //       setUserState({
+  //         isLoading: false,
+  //         user: { type: "admin", userName: "tekihei2317" },
+  //         // user: undefined,
+  //       }),
+  //     500
+  //   );
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const login = React.useCallback(
     (user: User) => setUserState({ isLoading: false, user }),

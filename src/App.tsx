@@ -1,3 +1,4 @@
+import { useReducer } from "react";
 import {
   AdminUser,
   AuthContextProvider,
@@ -10,6 +11,7 @@ function Main({ user }: { user: AdminUser }) {
     <div>
       <h1>トップページ</h1>
       <div>{user.userName}</div>
+      <div>{JSON.stringify(user)}</div>
     </div>
   );
 }
@@ -19,7 +21,7 @@ const Loading = () => {
 };
 
 type AuthenticationProps = {
-  children: (user: User) => React.ReactElement;
+  children: (user: User) => JSX.Element;
 };
 
 const Authentication = ({ children }: AuthenticationProps) => {
@@ -32,7 +34,7 @@ const Authentication = ({ children }: AuthenticationProps) => {
 
 type AdminOnlyProps = {
   user: User;
-  children: (user: AdminUser) => React.ReactElement;
+  children: (user: AdminUser) => JSX.Element;
 };
 
 const AdminOnly = ({ user, children }: AdminOnlyProps) => {
@@ -80,7 +82,51 @@ const Debug = () => {
   );
 };
 
+type ComponentMiddlewareProps = {
+  middlewares: any[];
+  children: (props: unknown) => any;
+};
+
+const ComponentMiddleware = ({
+  children,
+  middlewares,
+}: ComponentMiddlewareProps) => {
+  const [currentIndex, increment] = useReducer((prev) => prev + 1, 0);
+
+  const next = (props: any) => {
+    const middleware = middlewares[currentIndex];
+    increment();
+
+    if (middleware) return middleware(props, next);
+    else {
+      // 全てのミドルウェアを実行した場合
+      return children(props);
+    }
+  };
+
+  const result = next({});
+  console.log({ result });
+  return result;
+};
+
 export default function App() {
+  const { userState } = useAuthContext();
+
+  const middlewares = [
+    (props, next) => {
+      console.log("middleware called");
+      console.log({ userState });
+
+      if (userState.isLoading) return <Loading />;
+      if (userState.user === undefined) return <div>ログインしてください.</div>;
+
+      console.log({ user: userState.user });
+
+      // return next({ ...props, user: userState.user });
+      return next({ hoge: "hoge" });
+    },
+  ];
+
   return (
     <AuthContextProvider>
       <Debug />
@@ -91,6 +137,9 @@ export default function App() {
           </AdminOnly>
         )}
       </Authentication>
+      {/* <ComponentMiddleware middlewares={middlewares}>
+        {(props) => JSON.stringify(props)}
+      </ComponentMiddleware> */}
     </AuthContextProvider>
   );
 }
