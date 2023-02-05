@@ -1,7 +1,17 @@
-import { AuthContextProvider, useAuthContext } from "./Authentication";
+import {
+  AuthContextProvider,
+  useAuthContext,
+  useAuthenticatedUser,
+} from "./Authentication";
 
 function Main() {
-  return <div>トップページ</div>;
+  const user = useAuthenticatedUser();
+  return (
+    <div>
+      <h1>トップページ</h1>
+      <div>{user.userName}</div>
+    </div>
+  );
 }
 
 const Loading = () => {
@@ -16,9 +26,34 @@ const AuthGuard = ({ children }: { children: React.ReactElement }) => {
   return children;
 };
 
+const Debug = () => {
+  const { setUserState } = useAuthContext();
+
+  return (
+    <div>
+      <button onClick={() => setUserState({ isLoading: true })}>
+        ローディング
+      </button>
+      <button
+        onClick={() => setUserState({ isLoading: false, user: undefined })}
+      >
+        未ログイン
+      </button>
+      <button
+        onClick={() =>
+          setUserState({ isLoading: false, user: { userName: "tekihei2317" } })
+        }
+      >
+        ログイン済み
+      </button>
+    </div>
+  );
+};
+
 export default function App() {
   return (
     <AuthContextProvider>
+      <Debug />
       <AuthGuard>
         <Main />
       </AuthGuard>

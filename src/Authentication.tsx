@@ -15,6 +15,8 @@ type AuthContextValue = {
   userState: UserState<User>;
   login: (user: User) => void;
   logout: () => void;
+  // デバッグ用
+  setUserState: (userState: UserState<User>) => void;
 };
 
 const AuthContext = React.createContext<AuthContextValue | undefined>(
@@ -35,14 +37,14 @@ export const AuthContextProvider = ({
       () =>
         setUserState({
           isLoading: false,
-          // user: { userName: 'tekihei2317' },
-          user: undefined,
+          user: { userName: "tekihei2317" },
+          // user: undefined,
         }),
       500
     );
 
     return () => clearTimeout(timer);
-  });
+  }, []);
 
   const login = React.useCallback(
     (user: User) => setUserState({ isLoading: false, user }),
@@ -55,7 +57,7 @@ export const AuthContextProvider = ({
   );
 
   return (
-    <AuthContext.Provider value={{ userState, login, logout }}>
+    <AuthContext.Provider value={{ userState, login, logout, setUserState }}>
       {children}
     </AuthContext.Provider>
   );
@@ -69,4 +71,13 @@ export function useAuthContext(): AuthContextValue {
   }
 
   return value;
+}
+
+export function useAuthenticatedUser(): User {
+  const { userState } = useAuthContext();
+
+  if (userState.isLoading) throw new Error("User is loading");
+  if (userState.user === undefined) throw new Error("User is not logged in");
+
+  return userState.user;
 }
