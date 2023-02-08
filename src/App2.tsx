@@ -41,15 +41,21 @@ const DebugButtons = () => {
   );
 };
 
-const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  return <AuthContextProvider>{children}</AuthContextProvider>;
+const AppContents = () => {
+  const authContext = useAuthContext();
+
+  return (
+    <>
+      <DebugButtons />
+      <AuthMiddleware ctx={authContext}>{(ctx) => <Main user={ctx.user} />}</AuthMiddleware>
+    </>
+  );
 };
 
 export default function App() {
   return (
-    <AppProvider>
-      <DebugButtons />
-      <AuthMiddleware>{(props) => <div>{JSON.stringify(props)}</div>}</AuthMiddleware>
-    </AppProvider>
+    <AuthContextProvider>
+      <AppContents />
+    </AuthContextProvider>
   );
 }

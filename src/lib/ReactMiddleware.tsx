@@ -55,7 +55,7 @@ function createMiddlewareComponent<TInputContext, TOutputContext = TInputContext
   MiddlewareComponent._middlewares = middlewares ? middlewares : [];
 
   MiddlewareComponent.use = function <TNewContext>(fn: MiddlewareFunction<TOutputContext, TNewContext>) {
-    return createMiddlewareComponent<TNewContext>([...MiddlewareComponent._middlewares, fn]);
+    return createMiddlewareComponent<TInputContext, TNewContext>([...MiddlewareComponent._middlewares, fn]);
   };
 
   return MiddlewareComponent;

@@ -7,8 +7,7 @@ function createMiddlewareContext() {
   return { userState };
 }
 
-export const { Component: MiddlewareComponent, defineMiddleware } =
-  initComponentMiddleware(createMiddlewareContext);
+export const { Component: MiddlewareComponent, defineMiddleware } = initComponentMiddleware(createMiddlewareContext);
 
 const ensureUserIsLoggedIn = defineMiddleware((ctx, next) => {
   if (ctx.userState.isLoading) return <div>Loading...</div>;

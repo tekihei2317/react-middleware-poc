@@ -18,12 +18,9 @@ const ensureLoggedIn = createMiddleware(({ ctx, next }) => {
   return next({ ...ctx, user: ctx.userState.user });
 });
 
-export const AuthMiddleware = MiddlewareComponent.use(ensureLoggedIn);
+// const ensureUserIsAdmin = ensureLoggedIn.pipe(...)みたいにしたい
 
-// 目標
-// const Layout createComponent().use(({ ctx, next}) => {
-//  return next(newContext)
-// })
-// としたとき、
-// <Layout>{((ctx) => ctx)}</Layout>
-// のctxの型がtypeof newContextになっていること
+export const AuthMiddleware = MiddlewareComponent.use(ensureLoggedIn).use(({ ctx, next }) => {
+  if (ctx.user.type !== "admin") return <div>権限がありません</div>;
+  return next({ ...ctx, user: ctx.user });
+});
