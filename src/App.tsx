@@ -1,5 +1,5 @@
 import { AdminUser, AuthContextProvider, useAuthContext } from "./Authentication";
-import { AuthMiddleware } from "./Middleware";
+import { AuthMiddleware, createMiddlewareContext } from "./Middleware";
 
 function Main({ user }: { user: AdminUser }) {
   return (
@@ -42,12 +42,11 @@ const DebugButtons = () => {
 };
 
 const AppContents = () => {
-  const authContext = useAuthContext();
-
+  const ctx = createMiddlewareContext();
   return (
     <>
       <DebugButtons />
-      <AuthMiddleware ctx={authContext}>{(ctx) => <Main user={ctx.user} />}</AuthMiddleware>
+      <AuthMiddleware ctx={ctx}>{(ctx) => <Main user={ctx.user} />}</AuthMiddleware>
     </>
   );
 };

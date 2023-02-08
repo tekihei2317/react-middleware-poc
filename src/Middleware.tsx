@@ -1,7 +1,7 @@
 import { useAuthContext } from "./Authentication";
 import { initMiddleware } from "./lib/ReactMiddleware";
 
-function createMiddlewareContext() {
+export function createMiddlewareContext() {
   const { userState } = useAuthContext();
 
   return { userState };
