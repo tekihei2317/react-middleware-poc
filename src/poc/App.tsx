@@ -1,5 +1,5 @@
-import { AdminUser, AuthContextProvider, useAuthContext } from "./Authentication";
-import { AuthMiddleware } from "./Middleware2";
+import { AdminUser, AuthContextProvider, useAuthContext } from "../Authentication";
+import { MiddlewareComponent } from "./Middleware";
 
 function Main({ user }: { user: AdminUser }) {
   return (
@@ -41,21 +41,11 @@ const DebugButtons = () => {
   );
 };
 
-const AppContents = () => {
-  const authContext = useAuthContext();
-
-  return (
-    <>
-      <DebugButtons />
-      <AuthMiddleware ctx={authContext}>{(ctx) => <Main user={ctx.user} />}</AuthMiddleware>
-    </>
-  );
-};
-
 export default function App() {
   return (
     <AuthContextProvider>
-      <AppContents />
+      <DebugButtons />
+      <MiddlewareComponent>{(props) => <Main user={props.user} />}</MiddlewareComponent>
     </AuthContextProvider>
   );
 }
