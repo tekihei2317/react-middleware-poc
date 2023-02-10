@@ -28,7 +28,7 @@ type MiddlewareComponentProps<TInputContext, TOutputContext> = {
 
 type AnyMiddlewareFunction = MiddlewareFunction<any, any>;
 
-interface MiddlewareComponent<TInputContext, TOutputContext> {
+export interface MiddlewareComponent<TInputContext, TOutputContext> {
   (props: MiddlewareComponentProps<TInputContext, TOutputContext>): JSX.Element;
   _middlewares: AnyMiddlewareFunction[];
   use: <TNewContext>(

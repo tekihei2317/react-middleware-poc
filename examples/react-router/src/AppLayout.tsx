@@ -1,8 +1,42 @@
 import { Link } from "react-router-dom";
+import { useAuthContext } from "./authentication";
+
+const DebugButtons = () => {
+  const { setUserState, userState } = useAuthContext();
+
+  return (
+    <div>
+      <button onClick={() => setUserState({ isLoading: true })}>ローディング</button>
+      <button onClick={() => setUserState({ isLoading: false, user: undefined })}>未ログイン</button>
+      <button
+        onClick={() =>
+          setUserState({
+            isLoading: false,
+            user: { type: "general", userName: "tekihei2317", userId: 1 },
+          })
+        }
+      >
+        一般ユーザー
+      </button>
+      <button
+        onClick={() =>
+          setUserState({
+            isLoading: false,
+            user: { type: "admin", userName: "tekihei2317" },
+          })
+        }
+      >
+        管理者ユーザー
+      </button>
+      <span>{JSON.stringify(userState)}</span>
+    </div>
+  );
+};
 
 export const AppLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
+      <DebugButtons />
       <ul
         style={{
           display: "flex",

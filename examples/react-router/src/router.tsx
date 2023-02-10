@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
+import { RenderPage } from "./middleware";
 import { Admin } from "./pages/Admin";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
     path: "/login",
     element: (
       <AppLayout>
-        <Login />
+        <RenderPage page={Login} />
       </AppLayout>
     ),
   },
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     path: "/profile",
     element: (
       <AppLayout>
-        <Profile />
+        <RenderPage page={Profile} />
       </AppLayout>
     ),
   },
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
     path: "/admin",
     element: (
       <AppLayout>
-        <Admin />
+        <RenderPage page={Admin} />
       </AppLayout>
     ),
   },

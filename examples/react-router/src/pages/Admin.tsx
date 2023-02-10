@@ -1,7 +1,7 @@
-import { AdminMiddleware, useMiddlewareContext } from "../middleware";
+import { AdminMiddleware } from "../middleware";
 import { InferHandlerProps } from "../lib/react-middleware";
 
-export const AdminContents = ({ ctx }: InferHandlerProps<typeof AdminMiddleware>) => {
+export const Admin = ({ ctx }: InferHandlerProps<typeof AdminMiddleware>) => {
   return (
     <div>
       <p>管理者ページ</p>
@@ -10,6 +10,4 @@ export const AdminContents = ({ ctx }: InferHandlerProps<typeof AdminMiddleware>
   );
 };
 
-export const Admin = () => {
-  return <AdminMiddleware ctx={useMiddlewareContext()} component={AdminContents} />;
-};
+Admin.Middleware = AdminMiddleware;
